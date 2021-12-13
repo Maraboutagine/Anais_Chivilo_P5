@@ -147,30 +147,33 @@ getTotals();
 // Modification d'une quantité de produit
 function modifyQtt() {
   let qttModif = document.querySelectorAll(".itemQuantity");
-
+  let prix = document.querySelectorAll(".cart__item__content__titlePrice > p");
+  console.log(prix);
   for (let k = 0; k < qttModif.length; k++) {
     qttModif[k].addEventListener("change", (event) => {
       event.preventDefault();
+      let qttModifValue = qttModif[k].valueAsNumber;
+      let quantityModif = produitEnregistreDansLocalStorage[k].panierQuantity;
+      let prixInitial = parseInt(prix[k].innerText, 10) / quantityModif;
+      alert(prixInitial);
+
+      prix[k].innerText = prixInitial * qttModifValue;
 
       //Selection de l'element à modifier en fonction de son id ET sa couleur
-      let quantityModif = produitEnregistreDansLocalStorage[k].panierQuantity;
-      let qttModifValue = qttModif[k].valueAsNumber;
 
-      const resultFind = produitEnregistreDansLocalStorage.find(
+      produitEnregistreDansLocalStorage[k].panierQuantity = qttModifValue;
+      /* const resultFind = produitEnregistreDansLocalStorage.find(
         (el) => el.qttModifValue !== quantityModif
-      );
+      );*/
 
-      resultFind.panierQuantity = qttModifValue;
+      /*resultFind.panierQuantity = qttModifValue;
       produitEnregistreDansLocalStorage[k].panierQuantity =
-        resultFind.panierQuantity;
+        resultFind.panierQuantity;*/
 
       localStorage.setItem(
         "produit",
         JSON.stringify(produitEnregistreDansLocalStorage)
       );
-
-      // refresh rapide
-      location.reload();
     });
   }
 }
