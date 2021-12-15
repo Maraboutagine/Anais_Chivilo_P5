@@ -304,51 +304,39 @@ function getForm() {
   };
 }
 getForm();
-
 //Envoi des informations client au localstorage
 function postForm() {
-  const btn_commander = document.getElementById("order");
+  const btnEnvoyerFormulaire = document.querySelector("#order");
 
-  //Ecouter le panier
-  btn_commander.addEventListener("click", (event) => {
-    //Récupération des coordonnées du formulaire client
-    let inputName = document.getElementById("firstName");
-    let inputLastName = document.getElementById("lastName");
-    let inputAdress = document.getElementById("address");
-    let inputCity = document.getElementById("city");
-    let inputMail = document.getElementById("email");
+  btnEnvoyerFormulaire.addEventListener("click", (e) => {
+    e.preventDefault();
 
-    //Construction d'un array depuis le local storage
-    let panierIDs = [];
-    for (let i = 0; i < produitEnregistreDansLocalStorage.length; i++) {
-      panierIDs.push(produitEnregistreDansLocalStorage[i].panierID);
-    }
-    console.log(panierIDs);
-
-    const order = {
-      contact: {
-        firstName: inputName.value,
-        lastName: inputLastName.value,
-        address: inputAdress.value,
-        city: inputCity.value,
-        email: inputMail.value,
-      },
-      products: panierIDs,
+    const formulaireValues = {
+      firstName: document.querySelector("#firstName").value,
+      lastName: document.querySelector("#lastName").value,
+      address: document.querySelector("#address").value,
+      city: document.querySelector("#city").value,
+      email: document.querySelector("#email").value,
     };
+    localStorage.setItem("formulaireValues", JSON.stringify(formulaireValues));
 
-    fetch("http://localhost:3000/api/products/order", {
+    let Envoyer = [];
+    for (let i = 0; i < produitEnregistreDansLocalStorage.length; i++) {
+      Envoyer.push(produitEnregistreDansLocalStorage[i].panierID);
+    }
+    const options = {
       method: "POST",
+      body: JSON.stringify(Envoyer),
       headers: {
+        Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(order),
-    })
-      .then((reponse) => reponse.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((err) => console.log(err));
+    };
 
-    postForm();
+    fetch("http://localhost:3000/api/products/order", options).then(
+      (response) => response.json()
+    );
   });
 }
+
+postForm();
