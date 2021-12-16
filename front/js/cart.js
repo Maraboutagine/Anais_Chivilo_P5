@@ -311,31 +311,39 @@ function postForm() {
   btnEnvoyerFormulaire.addEventListener("click", (e) => {
     e.preventDefault();
 
-    const formulaireValues = {
+    const contact = {
       firstName: document.querySelector("#firstName").value,
       lastName: document.querySelector("#lastName").value,
       address: document.querySelector("#address").value,
       city: document.querySelector("#city").value,
       email: document.querySelector("#email").value,
     };
-    localStorage.setItem("formulaireValues", JSON.stringify(formulaireValues));
 
-    let Envoyer = [];
+    let products = [];
     for (let i = 0; i < produitEnregistreDansLocalStorage.length; i++) {
-      Envoyer.push(produitEnregistreDansLocalStorage[i].panierID);
+      products.push(produitEnregistreDansLocalStorage[i].panierID);
     }
-    const options = {
+    let commande = {
+      contact: contact,
+      products: products,
+    };
+
+    fetch("http://localhost:3000/api/products/order", {
       method: "POST",
-      body: JSON.stringify(Envoyer),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    };
-
-    fetch("http://localhost:3000/api/products/order", options).then(
-      (response) => response.json()
-    );
+      body: JSON.stringify(commande),
+    })
+      .then(function (response) {
+        if (response.ok) {
+          return response.json();
+        }
+      })
+      .then(function (response) {
+        console.log(response.orderId);
+      });
   });
 }
 
