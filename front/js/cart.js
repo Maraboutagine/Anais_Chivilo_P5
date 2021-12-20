@@ -342,7 +342,8 @@ function postForm() {
         }
       })
       .then(function (response) {
-        console.log(response.orderId);
+        document.location.href = "confirmation.html";
+        localStorage.setItem("orderId", JSON.stringify(response.orderId));
       });
   });
 }
