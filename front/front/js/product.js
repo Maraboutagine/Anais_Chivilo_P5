@@ -78,8 +78,16 @@ function fetchProduit() {
           );
         };
 
+        function produitIdentique(produit) {
+          return produit._id == optionsProduit.panierID;
+        }
         //ajout dans le tableau de l'objet avec les valaurs choisi par l'utilisateur
         const ajoutProduitLocalStorage = () => {
+          const indexTrouve =
+            produitEnregistreDansLocalStorage.findIndex(produitIdentique);
+
+          console.log("indexTrouve:" + indexTrouve);
+
           //la transformation en format JSON et l'envoyer dans la key "produit" du localStorage
           produitEnregistreDansLocalStorage.push(optionsProduit);
 
