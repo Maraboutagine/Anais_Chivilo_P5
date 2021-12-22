@@ -155,20 +155,19 @@ function modifyQtt() {
       let qttModifValue = qttModif[k].valueAsNumber;
       let quantityModif = produitEnregistreDansLocalStorage[k].panierQuantity;
       let prixInitial = parseInt(prix[k].innerText, 10) / quantityModif;
-      alert(prixInitial);
 
       prix[k].innerText = prixInitial * qttModifValue;
 
       //Selection de l'element à modifier en fonction de son id ET sa couleur
 
       produitEnregistreDansLocalStorage[k].panierQuantity = qttModifValue;
-      /* const resultFind = produitEnregistreDansLocalStorage.find(
+      const resultFind = produitEnregistreDansLocalStorage.find(
         (el) => el.qttModifValue !== quantityModif
-      );*/
+      );
 
-      /*resultFind.panierQuantity = qttModifValue;
+      resultFind.panierQuantity = qttModifValue;
       produitEnregistreDansLocalStorage[k].panierQuantity =
-        resultFind.panierQuantity;*/
+        resultFind.panierQuantity;
 
       localStorage.setItem(
         "produit",

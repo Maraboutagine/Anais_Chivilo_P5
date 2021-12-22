@@ -92,8 +92,15 @@ function fetchProduit() {
         if (!produitEnregistreDansLocalStorage) {
           produitEnregistreDansLocalStorage = [];
         }
-
         ajoutProduitLocalStorage();
+
+        function VerificationOption() {
+          if (choixForm == produitEnregistreDansLocalStorage.panierCouleurs) {
+            choixQuantity += produitEnregistreDansLocalStorage.panierQuantity;
+          }
+        }
+        VerificationOption();
+
         // S'il n'y a pas de produit d'enregristré dans le local storage
         popupconfirmation();
       });
