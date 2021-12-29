@@ -71,6 +71,8 @@ function fetchProduit() {
           localStorage.getItem("produit")
         );
 
+        if(!produitEnregistreDansLocalStorage)  produitEnregistreDansLocalStorage = [];
+        
         // message pour la confirmation de l'ajout au panier
         const popupconfirmation = () => {
           window.confirm(
@@ -80,8 +82,18 @@ function fetchProduit() {
 
         //ajout dans le tableau de l'objet avec les valaurs choisi par l'utilisateur
         const ajoutProduitLocalStorage = () => {
-          //la transformation en format JSON et l'envoyer dans la key "produit" du localStorage
-          produitEnregistreDansLocalStorage.push(optionsProduit);
+          let pdtFound = false; //variable qui permet de tester si le pro
+          for(let pdtStocke of produitEnregistreDansLocalStorage)
+          {
+            
+            if (pdtStocke.panierCouleurs == optionsProduit.panierCouleurs & pdtStocke.panierID == optionsProduit.panierID) {
+              pdtStocke.panierQuantity = parseInt(pdtStocke.panierQuantity,10)+ parseInt(optionsProduit.panierQuantity,10);
+              pdtFound = true;
+            }
+          }
+          if (!pdtFound) produitEnregistreDansLocalStorage.push(optionsProduit); // si  pdtFound vaut false (donc le produit n'a pas été trouvé, c'est là qu'on l'ajoute à produitEnregisDansStorage)
+
+
 
           localStorage.setItem(
             "produit",
@@ -89,20 +101,11 @@ function fetchProduit() {
           );
         };
 
-        if (!produitEnregistreDansLocalStorage) {
-          produitEnregistreDansLocalStorage = [];
-        }
+        
         ajoutProduitLocalStorage();
 
-        function VerificationOption() {
-          if (choixForm == produitEnregistreDansLocalStorage.panierCouleurs) {
-            choixQuantity += produitEnregistreDansLocalStorage.panierQuantity;
-          }
-        }
-        VerificationOption();
-
-        // S'il n'y a pas de produit d'enregristré dans le local storage
         popupconfirmation();
       });
     });
 }
+
