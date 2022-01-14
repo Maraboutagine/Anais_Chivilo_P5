@@ -124,9 +124,9 @@ function getTotals() {
   for (var i = 0; i < myLength; ++i) {
     totalQtt += elemsQtt[i].valueAsNumber;
   }
-
   let productTotalQuantity = document.getElementById("totalQuantity");
   productTotalQuantity.innerHTML = totalQtt;
+
   console.log(totalQtt);
 
   // Récupération du prix total
@@ -143,7 +143,6 @@ function getTotals() {
   console.log(totalPrice);
 }
 getTotals();
-
 // Modification d'une quantité de produit
 function modifyQtt() {
   let qttModif = document.querySelectorAll(".itemQuantity");
@@ -153,26 +152,19 @@ function modifyQtt() {
     qttModif[k].addEventListener("change", (event) => {
       event.preventDefault();
       let qttModifValue = qttModif[k].valueAsNumber;
-      let quantityModif = produitEnregistreDansLocalStorage[k].panierQuantity;
-      let prixInitial = parseInt(prix[k].innerText, 10) / quantityModif;
 
-      prix[k].innerText = prixInitial * qttModifValue;
+      prix[k].innerText =
+        produitEnregistreDansLocalStorage[k].panierPrix * qttModifValue + "€";
 
       //Selection de l'element à modifier en fonction de son id ET sa couleur
 
       produitEnregistreDansLocalStorage[k].panierQuantity = qttModifValue;
-      const resultFind = produitEnregistreDansLocalStorage.find(
-        (el) => el.qttModifValue !== quantityModif
-      );
-
-      resultFind.panierQuantity = qttModifValue;
-      produitEnregistreDansLocalStorage[k].panierQuantity =
-        resultFind.panierQuantity;
 
       localStorage.setItem(
         "produit",
         JSON.stringify(produitEnregistreDansLocalStorage)
       );
+      getTotals();
     });
   }
 }
@@ -254,7 +246,7 @@ function getForm() {
     if (charRegExp.test(inputFirstName.value)) {
       firstNameErrorMsg.innerHTML = "";
     } else {
-      firstNameErrorMsg.innerHTML = "Veuillez renseigner ce champ.";
+      firstNameErrorMsg.innerHTML = "Ce champ est vide ou mal renseigné";
     }
   };
 
