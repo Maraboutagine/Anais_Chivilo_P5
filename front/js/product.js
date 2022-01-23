@@ -56,8 +56,6 @@ function fetchProduit() {
         let optionsProduit = {
           panierID: articles._id,
           panierName: articles.name,
-          panierPrix: articles.price.toString(),
-          panierDescription: articles.description,
           panierImg: articles.imageUrl,
           panierCouleurs: choixForm,
           panierQuantity: choixQuantity,
