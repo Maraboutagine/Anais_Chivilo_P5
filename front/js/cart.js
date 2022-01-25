@@ -67,17 +67,21 @@ function getCart() {
       // Insertion du prix
       let productPrice = document.createElement("p");
       productItemContentTitlePrice.appendChild(productPrice);
-      productPrice.className = "PrixClasse";
+      let PrixProduit = [];
       fetch(
         `http://localhost:3000/api/products/${produitEnregistreDansLocalStorage[produit].panierID}`
       )
         .then(function (res) {
           return res.json();
         })
-        .then((ResultatPrix) => {
-          const PrixProduit = ResultatPrix;
+        .then((promise) => {
+          const PrixProduit = promise;
 
-          productPrice.textContent = `${PrixProduit.price.toString()}` + " €";
+          productPrice.textContent = `${PrixProduit.price}` + " €";
+          console.log(promise);
+          productPrice.setAttribute("id", `${PrixProduit.price}`);
+          productPrice.setAttribute("name", "prixpanier");
+          console.log(productPrice);
         });
 
       // Insertion de l'élément "div"
@@ -130,7 +134,7 @@ function getTotals() {
   var elemsQtt = document.getElementsByClassName("itemQuantity");
   var myLength = elemsQtt.length,
     totalQtt = 0;
-  var productPrice = document.getElementsByClassName("PrixClasse");
+  var productPrice = document.getElementsByClassName("prixpanier");
   for (var i = 0; i < myLength; ++i) {
     totalQtt += elemsQtt[i].valueAsNumber;
   }
@@ -142,18 +146,19 @@ function getTotals() {
   totalPrice = 0;
 
   for (var i = 0; i < myLength; ++i) {
-    totalPrice += elemsQtt[i].valueAsNumber * productPrice[i].data;
+    totalPrice += elemsQtt[i].valueAsNumber * productPrice;
   }
 
   let productTotalPrice = document.getElementById("totalPrice");
   productTotalPrice.innerHTML = totalPrice;
   console.log(totalPrice);
+  console.log(productPrice);
 }
 
 getTotals();
 // Modification d'une quantité de produit
 function modifyQtt() {
-  let productPrice = document.querySelector(".PrixClasse");
+  let productPrice = document.getElementsByClassName("prixpanier");
   let qttModif = document.querySelectorAll(".itemQuantity");
   let prix = document.querySelectorAll(".cart__item__content__titlePrice > p");
   console.log(prix);
@@ -162,7 +167,7 @@ function modifyQtt() {
       event.preventDefault();
       let qttModifValue = qttModif[k].valueAsNumber;
 
-      prix[k].innerText = productPrice[k] * qttModifValue + "€";
+      prix.innerText = productPrice.valueAsNumber * qttModifValue + "€";
 
       //Selection de l'element à modifier en fonction de son id ET sa couleur
 
