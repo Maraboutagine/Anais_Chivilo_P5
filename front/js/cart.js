@@ -68,21 +68,14 @@ function getCart() {
       let productPrice = document.createElement("p");
       productItemContentTitlePrice.appendChild(productPrice);
       let PrixProduit = [];
-      fetch(
-        `http://localhost:3000/api/products/${produitEnregistreDansLocalStorage[produit].panierID}`
-      )
-        .then(function (res) {
-          return res.json();
-        })
-        .then((promise) => {
-          const PrixProduit = promise;
 
-          productPrice.textContent = `${PrixProduit.price}` + " €";
-          console.log(promise);
-          productPrice.setAttribute("id", `${PrixProduit.price}`);
-          productPrice.setAttribute("name", "prixpanier");
-          console.log(productPrice);
-        });
+      productPrice.textContent = getPriceByApi(
+        produitEnregistreDansLocalStorage[produit].panierID
+      );
+      productPrice.setAttribute(
+        "id",
+        `prix-${produitEnregistreDansLocalStorage[produit].panierID}`
+      );
 
       // Insertion de l'élément "div"
       let productItemContentSettings = document.createElement("div");
@@ -108,6 +101,10 @@ function getCart() {
       productQuantity.value =
         produitEnregistreDansLocalStorage[produit].panierQuantity;
       productQuantity.className = "itemQuantity";
+      productQuantity.setAttribute(
+        "id",
+        produitEnregistreDansLocalStorage[produit].panierID
+      );
       productQuantity.setAttribute("type", "number");
       productQuantity.setAttribute("min", "1");
       productQuantity.setAttribute("max", "100");
@@ -126,36 +123,46 @@ function getCart() {
       productSupprimer.innerHTML = "Supprimer";
     }
   }
+  getTotals();
 }
 getCart();
+function getPriceByApi(id) {
+  console.log(id);
+  fetch(`http://localhost:3000/api/products/${id}`)
+    .then(function (res) {
+      return res.json();
+    })
+    .then((promise) => {
+      return promise.price;
+    });
+}
 
 function getTotals() {
   // Récupération du total des quantités
   var elemsQtt = document.getElementsByClassName("itemQuantity");
   var myLength = elemsQtt.length,
     totalQtt = 0;
-  var productPrice = document.getElementsByClassName("prixpanier");
+  /* var productPrice = document.getElementsByClassName("prixpanier");*/
   for (var i = 0; i < myLength; ++i) {
     totalQtt += elemsQtt[i].valueAsNumber;
   }
+  console.log(totalQtt);
   let productTotalQuantity = document.getElementById("totalQuantity");
   productTotalQuantity.innerHTML = totalQtt;
-  console.log(totalQtt);
-
   // Récupération du prix total
   totalPrice = 0;
 
   for (var i = 0; i < myLength; ++i) {
+    var productPrice = getPriceByApi(elemsQtt[i].id);
+    console.log(getPriceByApi(elemsQtt[i].id));
     totalPrice += elemsQtt[i].valueAsNumber * productPrice;
   }
-
+  console.log(totalPrice);
   let productTotalPrice = document.getElementById("totalPrice");
   productTotalPrice.innerHTML = totalPrice;
-  console.log(totalPrice);
-  console.log(productPrice);
 }
 
-getTotals();
+/*getTotals();*/
 // Modification d'une quantité de produit
 function modifyQtt() {
   let productPrice = document.getElementsByClassName("prixpanier");
@@ -164,13 +171,18 @@ function modifyQtt() {
   console.log(prix);
   for (let k = 0; k < qttModif.length; k++) {
     qttModif[k].addEventListener("change", (event) => {
-      event.preventDefault();
-      let qttModifValue = qttModif[k].valueAsNumber;
+      /* event.preventDefault();
+      console.log(event.target.id);
+      console.log("test");
+      var prixProduit = document.getElementById("prix-" + event.target.id);
+      console.log(prixProduit.textContent);
+      prixProduit = parseInt(prixProduit.textContent);
 
-      prix.innerText = productPrice.valueAsNumber * qttModifValue + "€";
+      let qttModifValue = event.target.value;
+      prix.innerText = productPrice.valueAsNumber * qttModifValue + "€";*/
 
       //Selection de l'element à modifier en fonction de son id ET sa couleur
-
+      let qttModifValue = event.target.value;
       produitEnregistreDansLocalStorage[k].panierQuantity = qttModifValue;
 
       localStorage.setItem(
