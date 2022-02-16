@@ -67,16 +67,8 @@ function getCart() {
       // Insertion du prix
       let productPrice = document.createElement("p");
       productItemContentTitlePrice.appendChild(productPrice);
-      let PrixProduit = [];
-
-      showPriceByApi(
-        productPrice,
-        produitEnregistreDansLocalStorage[produit].panierID
-      );
-      productPrice.setAttribute(
-        "id",
-        `prix-${produitEnregistreDansLocalStorage[produit].panierID}`
-      );
+      productPrice.innerHTML =
+        produitEnregistreDansLocalStorage[produit].panierPrix + " €";
 
       // Insertion de l'élément "div"
       let productItemContentSettings = document.createElement("div");
@@ -102,10 +94,6 @@ function getCart() {
       productQuantity.value =
         produitEnregistreDansLocalStorage[produit].panierQuantity;
       productQuantity.className = "itemQuantity";
-      productQuantity.setAttribute(
-        "id",
-        produitEnregistreDansLocalStorage[produit].panierID
-      );
       productQuantity.setAttribute("type", "number");
       productQuantity.setAttribute("min", "1");
       productQuantity.setAttribute("max", "100");
@@ -127,68 +115,65 @@ function getCart() {
 }
 getCart();
 
-//cette fonction prends en parametre un element html comme source d'affichage et l'id d'un canapé pour recuperer son prix via l'API
-async function showPriceByApi(elem, idProduct) {
-  var priceToShow = await fetch(
-    `http://localhost:3000/api/products/${idProduct}`
-  )
-    .then(function (res) {
-      return res.json();
-    })
-    .then((promise) => {
-      return promise.price;
-    });
-  elem.textContent = priceToShow + "€";
-}
-
-//cette fonction va calculer et afficher le prix total des produits dans le panier en recuperant les prix unitaires dans l'API
-async function getTotals() {
+function getTotals() {
+  // Récupération du total des quantités
   var elemsQtt = document.getElementsByClassName("itemQuantity");
-  var myLength = elemsQtt.length;
-  var totalQtt = 0;
-  /* var productPrice = document.getElementsByClassName("prixpanier");*/
+  var myLength = elemsQtt.length,
+    totalQtt = 0;
+
   for (var i = 0; i < myLength; ++i) {
     totalQtt += elemsQtt[i].valueAsNumber;
   }
   let productTotalQuantity = document.getElementById("totalQuantity");
   productTotalQuantity.innerHTML = totalQtt;
+
+  console.log(totalQtt);
+
   // Récupération du prix total
-  var totalPrice = 0;
+  totalPrice = 0;
+
   for (var i = 0; i < myLength; ++i) {
-    var priceUnit = await fetch(
-      `http://localhost:3000/api/products/${elemsQtt[i].id}`
-    )
-      .then(function (res) {
-        return res.json();
-      })
-      .then((promise) => {
-        return promise.price;
-      });
-    totalPrice += elemsQtt[i].valueAsNumber * priceUnit;
+    totalPrice +=
+      elemsQtt[i].valueAsNumber *
+      produitEnregistreDansLocalStorage[i].panierPrix;
   }
+
   let productTotalPrice = document.getElementById("totalPrice");
   productTotalPrice.innerHTML = totalPrice;
+  console.log(totalPrice);
 }
-
 getTotals();
 
 // Modification d'une quantité de produit
 function modifyQtt() {
-  let productPrice = document.getElementsByClassName("prixpanier");
   let qttModif = document.querySelectorAll(".itemQuantity");
   let prix = document.querySelectorAll(".cart__item__content__titlePrice > p");
   console.log(prix);
   for (let k = 0; k < qttModif.length; k++) {
     qttModif[k].addEventListener("change", (event) => {
+      event.preventDefault();
+      let qttModifValue = qttModif[k].valueAsNumber;
+      let quantityModif = produitEnregistreDansLocalStorage[k].panierQuantity;
+      let prixInitial = parseInt(prix[k].innerText, 10) / quantityModif;
+
+      prix[k].innerText =
+        produitEnregistreDansLocalStorage[k].panierPrix * qttModifValue + "€";
+
       //Selection de l'element à modifier en fonction de son id ET sa couleur
-      let qttModifValue = event.target.value;
+
       produitEnregistreDansLocalStorage[k].panierQuantity = qttModifValue;
+      const resultFind = produitEnregistreDansLocalStorage.find(
+        (el) => el.qttModifValue !== quantityModif
+      );
+
+      resultFind.panierQuantity = qttModifValue;
+      produitEnregistreDansLocalStorage[k].panierQuantity =
+        resultFind.panierQuantity;
 
       localStorage.setItem(
         "produit",
         JSON.stringify(produitEnregistreDansLocalStorage)
       );
-      getTotals();
     });
   }
 }
